@@ -1,0 +1,109 @@
+library(ALSM)
+library(ggplot2)
+library(plot3D)
+library(ExpDes)
+
+#1
+brand=read.table("~/Desktop/brand.txt",quote="\"",comment.char="")
+names(brand)=c("pref","moisture","sweetness")
+attach(brand)
+brand.Y=lm(pref~moisture+sweetness)
+DSR=rstudent(brand.Y)
+alpha=0.1;n=16;p=2
+outlierTest(brand.Y,alpha)
+influence(brand.Y)$hat
+influence(brand.Y)$hat>2*p/n
+dffits(brand.Y)[14]
+dfbetas(brand.Y)[14,]
+cooks.distance(brand.Y)
+M=as.data.frame(cbind(X=c(1:16),Y=cooks.distance(brand.Y)))
+ggplot(M,aes(X,Y))+
+  geom_point()+
+  geom_line()+
+  labs(x="Index",y="Cook's Distance")
+
+#2
+F1=c(8,14,14,17)
+F2=c(4,5,6,9)
+F3=c(5,6,9,3)
+F4=c(6,9,2,6)
+a=dim(alloy)[2]
+b=dim(alloy)[1]
+alloy=cbind(F1,F2,F3,F4)
+y=c(t(as.matrix(alloy))) 
+factor=c("F1","F2","F3","F4")
+treat=gl(a,1,b*a,factor(factor))
+block=gl(b,a,a*b)
+aov=aov(y~treat+block)
+summary(aov)
+alpha=0.05
+pf(1-alpha,a-1,(b-1)*(a-1))
+qqnorm(resid(aov))
+qqline(resid(aov))
+shapiro.test(resid(aov))
+res=residuals(aov)
+Tea=data.frame(treat=as.numeric(treat),block=as.numeric(block),res)
+ggplot(Tea)+
+  geom_point(aes(treat,res))+
+  geom_hline(aes(yintercept=0))+
+  labs(x="Treatment",y="Residuals")
+ggplot(Tea)+
+  geom_point(aes(block,res))+
+  geom_hline(aes(yintercept=0))+
+  labs(x="Blocks",y="Residuals")
+grain=c(F1,F2,F3,F4)
+furnace=rep(factor,4)
+stir=c(rep(5,4),rep(10,4),rep(15,4),rep(20,4))
+ALG=lm(grain~furnace+stir)
+summary(ALG)
+
+#3
+p=5
+r1=c(8,7,1,7,3)
+r2=c(11,2,7,3,8)
+r3=c(4,9,10,1,5)
+r4=c(6,8,6,6,10)
+r5=c(4,2,3,8,8)
+y=c(r1,r2,r3,r4,r5)
+treat=c("A","B","C","D","E",
+        "B","C","D","E","A",
+        "C","D","E","A","B",
+        "D","E","A","B","C",
+        "E","A","B","C","D")
+treat=factor(treat)
+row.gp=gl(p,p,p^2)             # blocking factor 
+col.gp=rep(seq(1:p),p)
+dat=as.data.frame(cbind(y,treat,row.gp,col.gp))
+dat$treat=as.factor(dat$treat)
+dat$row.gp=as.factor(dat$row.gp)
+dat$col.gp=as.factor(dat$col.gp)
+aov=aov(y~treat+col.gp+row.gp,data=dat)
+summary(aov)
+alpha=0.05;pf(1-alpha,p-1,(p-2)*(p-1))
+
+#4
+Yield1=c(90.4,90.7,90.2,90.1,90.5,89.9,90.5,90.8,90.4)
+Yield2=c(90.2,90.6,90.4,90.3,90.6,90.1,90.7,90.9,90.1)
+Yield=c(Yield1,Yield2)
+Temperature=c(150,160,170)
+Pressure=c(200,215,230)
+a=3;b=a;n=2;alpha=0.05
+Pressure=gl(a,1,n*a*b,factor(Pressure))
+Temperature=gl(b,n*a,n*a*b,factor(Temperature))
+summary(aov(Yield~Temperature+Pressure+Temperature*Pressure))
+pf(1-alpha,a-1,a*b*(n-1));pf(1-alpha,b-1,a*b*(n-1));pf(1-alpha,(a-1)*(b-1),a*b*(n-1))
+summary(aov(Yield~Temperature+Pressure))
+qqnorm(resid(aov(Yield~Temperature+Pressure+Temperature*Pressure)))
+qqline(resid(aov(Yield~Temperature+Pressure+Temperature*Pressure)))
+res=residuals(aov(Yield~Temperature+Pressure+Temperature*Pressure))
+treat=as.numeric(Pressure)
+block=as.numeric(Temperature)
+Tea=data.frame(treat,block,res)
+ggplot(Tea)+
+  geom_point(aes(treat,res))+
+  geom_hline(aes(yintercept=0))+
+  labs(x="Treatment",y="Residuals")
+ggplot(Tea)+
+  geom_point(aes(block,res))+
+  geom_hline(aes(yintercept=0))+
+  labs(x="Blocks",y="Residuals")
