@@ -1,0 +1,25 @@
+\documentclass{homework}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{braket}
+% CHANGE THE FOLLOW THREE LINES!
+\newcommand{\hwname}{Josh Borders, Charles Colgan}
+% CHANGE THESE ONLY ONCE PER CLASS
+\newcommand{\hwtype}{Proposal}
+\newcommand{\hwclass}{MATH 6359}
+\begin{document}
+\maketitle
+
+\question*{Introduction}
+In recent years, the proliferation of world data has prompted social scientists to turn away from their first love of blindly fitting linear models toward the act of manufacturing indices, seeking to rank certain countries ahead of others in qualities like economic freedom, healthcare, and food security, among others. However, none of these manufactured indices have had quite as much attention as the World Happiness Report, which asks the question: Why are residents of some countries happier than others?
+
+\question*{Data}
+To answer this question, we used the World Happiness Reports from 2015-2019, taken from\\
+www.kaggle.com/unsdsn/world-happiness. This consists of the country, the region of the world it belongs to, its happiness score, rank, and standard error. It also includes the GDP per capita, family score, life expectancy, freedom score, and government corruption score of each country as the extent to which they contribute to the happiness score. The score itself is defined as the answer to the question "How would you rate your happiness on a scale of 0 to 10, where 10 is the happiest?" Country contains the names of the 158 countries considered, while region contains several greater geographic groupings.
+
+\question*{Tentative Plan}
+Our plan is to perform EDA on year one to examine the relationship between the variables. This will include visualization, testing for normality, multicollinearity, and so on. We will then fit a regression model to examine the magnitude of the effect of each feature on the Happiness Score, performing model diagnostics for this cross-section of data. Then, we will do some gentle time series analysis, examining any trends in the data across five years, and possibly using these trends to make predictions for which countries will be deemed the happiest in 2021.\\\\
+Lastly, since a project determining happiness seems a bit dubious, our final bit of analysis will be to take life expectancy at birth data from the World Bank and use it as a single predictor for the happiness score. We will compare this simple model to the World Happiness Model using goodness of fit tests. If the simple model performs similarly to the World Happiness Model, then the latter is likely over-hyped.
+
+\end{document}
